@@ -1,8 +1,8 @@
 package com.example.demo;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.Header;
-import org.apache.camel.builder.RouteBuilder;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -15,17 +15,8 @@ public class DemoApplication {
 	}
 
 	@Bean
-	public RouteBuilder routeBuilder() {
-		return new RouteBuilder() {
-			public void configure() throws Exception {
-				from("timer:hello?period={{timer.period}}")
-						.bean(DemoApplication.class, "updateMessage")
-						.log("${body}");
-			}
-		};
-	}
-
-	public String updateMessage(@Header(Exchange.TIMER_FIRED_TIME) String firedTime) {
-		return "Got event: " + firedTime;
-	}
+    public AWSCredentials credentials(@Value("${awsAccessKey}") String awsAccessKey,
+                                      @Value("${awsAccessKeySecret}") String awsAccessKeySecret) {
+        return new BasicAWSCredentials(awsAccessKey, awsAccessKeySecret);
+    }
 }
